@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+
+ {% block title %} Question Answer {% endblock %}
+ {% block content %}
+ 
+ {% block bgcolor %} {% endblock %}
+
+ <br>
+ <br>
+ <br>
+ <br>
+ <br>
+
+    <div class="container" >
+        <div class="title1">
+            <h2>Description</h2>
+        </div> 
+    
+       <div class="container main_description_box" >
+
+            <div class="container main_description_box_FirstDiv" >  
+                <p> <span style="font-size:large;"><b><i>Question-Answering:</i></b></span> models are able to retrieve the answer to a question from a given context. 
+                    This is useful for searching for an answer in a document. Question Answering (QA) models are often used to automate the 
+                    response to frequently asked questions by using a knowledge base (e.g. documents) as context. 
+                </p>             
+                      
+            </div>
+
+            <div class="container main_description_box_SecondDiv" >
+                <h5 class="title3" ><i>Input & Output Details:</i></h5>
+                <div class="box" >
+                    <ul>
+                        <li>Type context & question in respective fields or use Example dropdown. </li>
+                        <li>Click "Submit" button to get the answer. </li>
+                    </ul>
+                </div>
+                <div class="box" >
+                    <ul>
+                        <li>Answer to the question will be shown in result section with confident score.</li>
+                        <li>Model shows on an average 90% accuracy during testing.</li>
+                    </ul>
+                </div>
+            </div>            
+        </div> 
+    
+        <br><br><br>
+        <div class="container my-6 " >
+            <div class="row  gx-5  px-3" style="column-gap: 4%; " >
+                <div class="col-lg form-holder my-5 py-3" >
+                    <div class="title2">
+                        <h2><b>Input</b></h2>
+                    </div> 
+
+                    <form class="row g-4 mt-3 mb-3" method="POST"  id ="formdata"  >
+                        
+                        <div class="container">
+                            {{ form.hidden_tag() }}    
+
+                           
+                            <div class="row g-2">
+                                <div class="col-md-8 mt-4 pt-0 mb-0"  >  
+                                    {{form.context.label(class="form-label fs-5 fw-semibold")}}
+                                </div>
+                                <div class="col-sm-4 mt-4 pb-1"  >
+                                    <select class="form-select" id="floatingSelectGrid" onchange="run()">
+                                        <option selected  >Example</option>
+                                        <option value="1">Example 1</option>
+                                        <option value="2">Example 2</option>
+                                        <option value="3">Example 3</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-0 pt-0" >  
+                                <div class="form-floating">
+                                    {{form.context(class="form-control", placeholder="Leave a comment here", id="context", style="height: 200px" )}}
+                                    <label for="context">Type context:</label>
+                                </div>
+                            </div>
+                             
+                            
+
+                            <div  class="col-md-12 mt-4" >                            
+                                {{form.question.label(class="form-label fs-5 fw-semibold")}}<br>
+                                {{form.question(class="form-control",  id="question")}}                                
+                            </div>
+                        
+                            <div class="col-md-6 mt-4  "> 
+                                <button class="btn btn-bd-primary" id="but" >
+                                    <img src="../../../static/pic/spinner.gif" id ="spinner-gif" width="20" height="20" salt="">
+                                    <span> Submit </span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>                    
+                </div>
+        
+        
+                <div class="col-lg  form-holder my-5 py-3">
+                    <div class="title2" id="result">
+                        <h2><b>Result</b></h2>
+                    </div>
+                    <br> 
+                    <ul class="row g-4 mt-3 mb-3">
+                        <li id="li1"> Yet to ask a question !!! </li>
+                        <li id="li2"> To ask a question fill the question & contaxt fields and click submit button. </li>
+                    </ul>    
+                </div> 
+            </div>
+        </div>
+    </div>
+  
+  
+   
+    <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>                                    <!-- save file cdn -->
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>    <!-- jquery cdn -->
+  
+  
+    <script >
+        $('#processing-gif').hide()
+        $('#spinner-gif').hide()
+        $(document).ready(function() {      
+            $('form').submit(function (e) {
+            e.preventDefault();
+            var url = "{{ url_for('nlpapps.QuestionAnswering_ajax')}}"; // send the form data here.
+            var form_data =  $("#formdata").serialize();
+                                   
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form_data,  
+
+                beforeSend: function(){
+                    $('#pred').hide()
+                    $('#processing-gif').show()  
+                    $('#spinner-gif').show()
+                },
+                
+                success: function (data) {
+
+                    if (data.data.massage == "sucess") {
+
+                        var li1 = document.getElementById('li1');
+                        li1.className = 'answer'
+                        li1.innerHTML = "<span>Answer:</span> " + data.data.prid 
+                        var li2 = document.getElementById('li2');
+                        li2.innerHTML = "Confident to answer: "+ data.data.conf + " &nbsp; &nbsp;   !!!! Ask another question !!!!"
+                    }
+
+                    else if  (data.data.massage == "codeerror") {
+                        var li1 = document.getElementById('li1');
+                        li1.innerHTML = "Something went Wrong!!!!"
+                        var li2 = document.getElementById('li2');
+                        li2.innerHTML = "Please check load_QA_model function !!!"
+                        alert("Something went wrong (code broken) !!!");
+                    }
+
+                    else  {
+                        var li1 = document.getElementById('li1');
+                        li1.innerHTML = "Something went Wrong!!!!"
+                        var li2 = document.getElementById('li2');
+                        li2.innerHTML = data.data.prid
+                        alert("Something went wrong (Response error) !!!");
+                    }
+                    $('#processing-gif').hide()  
+                    $('#spinner-gif').hide()                
+                }
+            });
+            e.preventDefault(); // block the traditional submission of the form.
+            });
+                    // Inject our CSRF token into our AJAX request.
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                    }
+               }
+            });
+        });
+    </script>
+
+    <script>
+        function run() {
+            var example = document.getElementById("floatingSelectGrid").value;
+            if (example ==1) {
+                document.getElementById("context").value = "My name is shubhankar and i worked iqvia pvt at bangalore"
+                document.getElementById("question").value = "where do i worked?"
+            }
+            else if (example ==2) {
+                document.getElementById("context").value = "My name is Clara and I live in Berkeley."
+                document.getElementById("question").value = "What's my name?"
+            }
+            else {
+                document.getElementById("context").value = "The Amazon rainforest (Portuguese: Floresta Amazônica or Amazônia; Spanish: Selva Amazónica, Amazonía or usually Amazonia; French: Forêt amazonienne; Dutch: Amazoneregenwoud), also known in English as Amazonia or the Amazon Jungle, is a moist broadleaf forest that covers most of the Amazon basin of South America. This basin encompasses 7,000,000 square kilometres (2,700,000 sq mi), of which 5,500,000 square kilometres (2,100,000 sq mi) are covered by the rainforest. This region includes territory belonging to nine nations. The majority of the forest is contained within Brazil, with 60% of the rainforest, followed by Peru with 13%, Colombia with 10%, and with minor amounts in Venezuela, Ecuador, Bolivia, Guyana, Suriname and French Guiana. States or departments in four nations contain Amazonas in their names. The Amazon represents over half of the planet's remaining rainforests, and comprises the largest and most biodiverse tract of tropical rainforest in the world, with an estimated 390 billion individual trees divided into 16,000 species."
+                document.getElementById("question").value = "Which name is also used to describe the Amazon rainforest in English?"
+            }
+        }
+    </script>
+{% endblock %} 
+

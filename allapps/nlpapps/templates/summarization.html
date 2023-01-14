@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+
+ {% block title %} Summarization {% endblock %}
+ {% block content %}
+ 
+ {% block bgcolor %} {% endblock %}
+
+ <br>
+ <br>
+ <br>
+ <br>
+ <br>
+
+    <div class="container" >
+        <div class="title1">
+            <h2>Description</h2>
+        </div> 
+    
+       <div class="container main_description_box" >
+
+            <div class="container main_description_box_FirstDiv" >  
+                <p> <span style="font-size:large;"><b><i>Text Summarization:</i></b></span> Text summarization is the technique for generating a concise and 
+                    precise summary of voluminous texts while focusing on the sections that convey useful information, and without losing the overall meaning. 
+                    Automatic text summarization aims to transform lengthy documents into shortened versions, something which could be difficult and costly to 
+                    undertake if done manually.
+                </p>             
+                      
+            </div>
+
+            <div class="container main_description_box_SecondDiv" >
+                <h5 class="title3" ><i>Input & Output Details:</i></h5>
+                <div class="box" >
+                    <ul>
+                        <li>Paste or wright your text in input section and choose no. of words in summarized text. </li>
+                        <li>Click "Submit" button to get the summarized text. </li>
+                    </ul>
+                </div>
+                <div class="box" >
+                    <ul>
+                        <li>Summarized text will be shown in result section.</li>
+                        <li>Model shows on an average 90% accuracy during testing.</li>
+                    </ul>
+                </div>
+            </div>            
+        </div> 
+    
+        <br><br><br>
+        <div class="container my-6 " >
+            <div class="row  gx-5  px-3" style="column-gap: 4%; " >
+                <div class="col-lg form-holder my-5 py-3" >
+                    <div class="title2">
+                        <h2><b>Input</b></h2>
+                    </div> 
+
+                    <form class="row g-4 mt-3 mb-3" method="POST"  id ="formdata"  >
+                        
+                        <div class="container">
+                            {{ form.hidden_tag() }}    
+
+                           
+                            <div class="row g-2">
+                                <div class="col-md-8 mt-4 pt-0 mb-0"  >  
+                                    {{form.longtexts.label(class="form-label fs-5 fw-semibold")}}
+                                </div>
+                                <div class="col-sm-4 mt-4 pb-1"  >
+                                    <select class="form-select" id="floatingSelectGrid" onchange="run()">
+                                        <option selected  >Example</option>
+                                        <option value="1">Example 1</option>
+                                        <option value="2">Example 2</option>
+                                        <option value="3">Example 3</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+
+                            
+                            <div class="col-md-12 mt-0 pt-0" >  
+                                <div class="form-floating">
+                                    {{form.longtexts(class="form-control", placeholder="Leave a comment here", id="longtexts", style="height: 300px" )}}
+                                    <label for="longtexts">Type text:</label>
+                                </div>
+                            </div>
+                             
+                            
+
+                            <div class="col-md-12 mt-4 ">
+                                {{form.maxlength.label(class="form-label fs-5 fw-semibold")}}<br>
+                                <div class="slider"> 
+                                    {{form.maxlength(oninput="this.form.maxlengthInput.value=this.value" )}}
+                                    <input type="number" name="maxlengthInput" min="1" max="100"  value="50" oninput="this.form.maxlength.value=this.value" >
+                                </div>
+                            </div>
+                        
+                            <div class="col-md-6 mt-4  "> 
+                                <button class="btn btn-bd-primary" id="but" >
+                                    <img src="../../../static/pic/spinner.gif" id ="spinner-gif" width="20" height="20" salt="">
+                                    <span> Submit </span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>                    
+                </div>
+        
+        
+                <div class="col-lg  form-holder my-5 py-3">
+                    <div class="title2" id="result">
+                        <h2><b>Result</b></h2>
+                    </div>
+                     
+                    <div class="row g-4 mt-0 mb-0" >
+                        <div class="col-md-12 mt-4  "> 
+                        <h5 class="form-label fs-5 fw-semibold" > Summarized Text:</h5>
+                        <div class= "SummarizedText " id="Summarized_Text">
+                        </div>
+                        </div>
+                    </dev>    
+                </div> 
+            </div>
+        </div>
+    </div>
+  
+  
+   
+    <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>                                    <!-- save file cdn -->
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>    <!-- jquery cdn -->
+  
+  
+    <script >
+        $('#processing-gif').hide()
+        $('#spinner-gif').hide()
+        $(document).ready(function() {      
+            $('form').submit(function (e) {
+            e.preventDefault();
+            var url = "{{ url_for('nlpapps.summarization_ajax')}}"; // send the form data here.
+            var form_data =  $("#formdata").serialize();
+                                   
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form_data,  
+
+                beforeSend: function(){
+                    $('#pred').hide()
+                    $('#processing-gif').show()  
+                    $('#spinner-gif').show()
+                },
+                
+                success: function (data) {
+
+                    if (data.data.massage == "sucess") {
+
+                        var SummarizedText = document.getElementById('Summarized_Text');
+                        SummarizedText.className = 'SummarizedText'
+                        SummarizedText.innerHTML = data.data.prid 
+
+                    }
+
+                    else if  (data.data.massage == "codeerror") {
+                        var SummarizedText = document.getElementById('Summarized_Text');
+                        SummarizedText.innerHTML = "Something went Wrong!!!!"
+                        alert("Something went wrong (code broken) !!!");
+                    }
+
+                    else  {
+                        var SummarizedText = document.getElementById('Summarized_Text');
+                        SummarizedText.innerHTML = "Something went Wrong!!!!"
+                        alert("Something went wrong (Response error) !!!");
+                    }
+                    $('#processing-gif').hide()  
+                    $('#spinner-gif').hide()                
+                }
+            });
+            e.preventDefault(); // block the traditional submission of the form.
+            });
+                    // Inject our CSRF token into our AJAX request.
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                    }
+               }
+            });
+        });
+    </script>
+
+    <script>
+        function run() {
+            var example = document.getElementById("floatingSelectGrid").value;
+            if (example ==1) {
+                document.getElementById("longtexts").value = "The tower is 324 metres (1,063 ft) tall, about the same height as an 81-storey building, and the tallest structure in Paris. Its base is square, measuring 125 metres (410 ft) on each side. During its construction, the Eiffel Tower surpassed the Washington Monument to become the tallest man-made structure in the world, a title it held for 41 years until the Chrysler Building in New York City was finished in 1930. It was the first structure to reach a height of 300 metres. Due to the addition of a broadcasting aerial at the top of the tower in 1957, it is now taller than the Chrysler Building by 5.2 metres (17 ft). Excluding transmitters, the Eiffel Tower is the second tallest free-standing structure in France after the Millau Viaduct." 
+            }
+            else if (example ==2) {
+                document.getElementById("longtexts").value =   "Jeff: Can I train a 🤗 Transformers model on Amazon SageMaker? Philipp: Sure you can use the new Hugging Face Deep Learning Container.  Jeff: ok. Jeff: and how can I get started?  Jeff: where can I find documentation?  Philipp: ok, ok you can find everything here. https://huggingface.co/blog/the-partnership-amazon-sagemaker-and-hugging-face" 
+            }
+            else {
+                document.getElementById("longtexts").value = "The Amazon rainforest (Portuguese: Floresta Amazônica or Amazônia; Spanish: Selva Amazónica, Amazonía or usually Amazonia; French: Forêt amazonienne; Dutch: Amazoneregenwoud), also known in English as Amazonia or the Amazon Jungle, is a moist broadleaf forest that covers most of the Amazon basin of South America. This basin encompasses 7,000,000 square kilometres (2,700,000 sq mi), of which 5,500,000 square kilometres (2,100,000 sq mi) are covered by the rainforest. This region includes territory belonging to nine nations. The majority of the forest is contained within Brazil, with 60% of the rainforest, followed by Peru with 13%, Colombia with 10%, and with minor amounts in Venezuela, Ecuador, Bolivia, Guyana, Suriname and French Guiana. States or departments in four nations contain Amazonas in their names. The Amazon represents over half of the planet's remaining rainforests, and comprises the largest and most biodiverse tract of tropical rainforest in the world, with an estimated 390 billion individual trees divided into 16,000 species."
+            }
+        }
+    </script>
+{% endblock %} 
+
