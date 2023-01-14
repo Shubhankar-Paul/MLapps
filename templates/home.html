@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+ {% block title %} Home {% endblock %}
+ {% block bgcolor %} style="background-color:rgba(42, 44, 57, .95);" {% endblock %}
+
+   <!-- ======= Hero Section ======= -->
+     <div class="hero">
+       <br>
+       <br>
+       <br>
+       <br>
+       <br>
+       <h1> Welcome to MLapps</h1>
+       <p > We provide ML application such as   <i>Predictive Models, Image Colorization, <br>Image Enhancement </i> and many more.</p>
+       <a href="{{url_for('core.services')}}" >
+         <button class="btn btn-outline-orange py-1" onclick="filterSelection('All')" type="Submit">Get Started -></button>
+       </a>
+     </div>
+{% endblock %}

@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+ 
+{% block title %} Services  {% endblock %}
+{% block content %}
+ 
+ {% block bgcolor %}  {% endblock %}
+
+      <br><br>
+
+      <div class="sidebar" id="myBtnContainer">
+          <button class="btn active" onclick="filterSelection('all')" id="defaultOpen">Show All</button>
+          <button class="btn" onclick="filterSelection('PModels')">Prediction Models</button>
+          <button class="btn" onclick="filterSelection('Coloriz')">Image Colorization</button>
+          <button class="btn" onclick="filterSelection('Enhance')">Image Enhancement</button>
+          <button class="btn" onclick="filterSelection('DModels')">Detection Models</button>
+          <button class="btn" onclick="filterSelection('NLPapps')">NLP Applications</button>
+        </div>
+
+
+
+      <div style ="margin-top:10px; margin-left: 25%;" > <!--background-color: #a4c27f;-->
+        <div class="section-header">
+          <h2>Services</h2>
+        </div>
+
+        <!--<div class="flex-container;"> -->
+        <div class="card-deck">
+
+          <a href="{{url_for('prediction.heart_attack')}}">
+            <div class="filterDiv PModels card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/heart_attack1.png" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title">Heart Attack</h5> 
+                <p class="card-text">This Model predicts Heart Failure upon taking several input from user. </p>
+                </div>
+            </div>
+          </a>
+
+          <a href="{{ url_for('prediction.malaria_prediction')}}">
+            <div class="filterDiv PModels card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/malaria_screener1.png" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title">Malaria Test</h5>
+                <p class="card-text">Malaria parasites can be identified by examining patient's blood films.</p>
+                </div>
+            </div>
+          </a>
+
+          <a href="{{ url_for('prediction.Coronavirus_tweets')}}">
+            <div class="filterDiv PModels card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/Coronavirus_tweets.png" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title">Coronavirus tweets Sentiment</h5>
+                <p class="card-text">Sentiment Analysis of Tweets related to the Covid-19 pandemic. </p>
+                </div>
+            </div>
+          </a>
+
+
+          <a href="{{url_for('detection.cardiac_detection')}}">
+            <div class="filterDiv DModels card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/Cardiac_Detection.png" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title">Cardiac Detection</h5>
+                <p class="card-text">A chest X-ray helps detect problems with your heart and lungs. </p>
+                </div>
+            </div>
+          </a>
+
+          <a href="#">
+            <div class="filterDiv DModels card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/coming_soon.png" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title">Card title</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the </p>
+                </div>
+            </div>
+          </a>
+
+          <a href="#">
+            <div class="filterDiv DModels card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/coming_soon.png" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title">Card title</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the </p>
+                </div>
+            </div>
+          </a>
+
+
+
+          <a href="{{url_for('colorize.color2gray')}}"> 
+            <div class="filterDiv Coloriz card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/color2gray.png" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title">Color to gray</h5>
+                <p class="card-text">Convert an image to grayscale. This tool removes all color from input picture.</p>
+                </div>
+            </div>
+          </a>
+
+
+
+          <a href="{{url_for('colorize.gray2color')}}">
+            <div class="filterDiv Coloriz card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/Image_Colorizer.png" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title">Image Colorizer</h5>
+                <p class="card-text">Colorizing black & white images by the help of AI and Deep Learning.</p>
+                </div>
+            </div>
+          </a>
+
+          <a href="#">
+            <div class="filterDiv Coloriz card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/coming_soon.png" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title">Card title</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the </p>
+                </div>
+            </div>
+          </a>
+
+          <a href="{{ url_for('enhance.lowlight_img_enhance')}}">
+            <div class="filterDiv Enhance card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/Lowlight_image_enhancement1.jpg" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title">Low-light Image Enhancement</h5>
+                <p class="card-text">Goal of recovering high-quality image content from its degraded version image.</p>
+                </div>
+            </div>
+          </a>
+
+          <a href="#">
+            <div class="filterDiv Enhance card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/coming_soon.png" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title">Card title</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the </p>
+                </div>
+            </div>
+          </a>
+
+
+          <a href="#">
+            <div class="filterDiv Enhance card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/coming_soon.png" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title">Card title</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the </p>
+                </div>
+            </div>
+          </a>
+
+          <a href="{{ url_for('nlpapps.QuestionAnswering')}}">
+            <div class="filterDiv NLPapps card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/Question_Answering2.png" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title">Question Answering</h5>
+                <p class="card-text">AI based app that can retrieve the answer to a question from a given context.</p>
+                </div>
+            </div>
+          </a>
+
+          <a href="{{url_for('nlpapps.summarization')}}">
+            <div class="filterDiv NLPapps card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/Text-Summarization-NLP.png" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title">Text Summarization</h5>
+                <p class="card-text">An AI based approach to Summarize a large text into a smaller summary.</p>
+                </div>
+            </div>
+          </a>
+
+          <a href="#">
+            <div class="filterDiv NLPapps card" style="width: 21rem;  height:auto; border-color:#f85a40; border-width:1.8px" >
+              <img class="card-img-top" src="../../static/pic/coming_soon.png" alt="Card image cap" style="height:13rem">
+              <div class="card-body text-dark">
+                <h5 class="card-title"> Card title </h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the </p>
+                </div>
+            </div>
+          </a>
+
+      </div>
+     </div>
+
+     <!-- Template Main JavaScript File -->
+     <script src="../../static/js/main.js"></script>
+
+
+{% endblock %}
+
