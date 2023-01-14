@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %} Cardiac Detection {% endblock %}
+ {% block content %}
+  
+ {% block bgcolor %}  {% endblock %}
+
+ <br>
+ <br>
+ <br>
+ <br>
+ <br>
+
+  <div class="container" >
+    <div class="title1">
+      <h2>Description</h2>
+    </div> 
+    
+    <div class="container main_description_box" >
+
+      <div class="container main_description_box_FirstDiv" >  
+        <p><span style="font-size:large;"><b><i>Cardiac Detection :</i></b></span> One of the most challenging tasks for clinicians is detecting symptoms of cardiovascular disease as 
+               earlier as possible. A chest X-ray helps detect problems with your heart and lungs. this app helps to detect cardiac detection
+               given a input X-Ray image.        </p>          
+      </div>
+
+      <div class="container main_description_box_SecondDiv" >
+        <h5 class="title3" ><i>Input & Output Details:</i></h5>
+        <div class="box" >
+          <ul >
+            <li>Load any pic (<b>JPEG, JPG, PNG</b> only) in input section using “Choose file”.</li>
+            <li>Click "Submit" button to get the Cardiac Detected pic. </li>
+          </ul>
+        </div>
+        <div class="box" >
+          <ul>
+            <li>Cardiac Detected pic will be shown in result section.</li>
+            <li>Click on “Save As” button to save your Cardiac Detected pic.</li>
+          </ul>
+        </div>
+      </div>            
+    </div> 
+    
+    <br><br><br>
+    <div class="container my-6 " >
+      <div class="row  gx-5  px-3" style="column-gap: 4%; " >
+        <div class="col-lg form-holder my-5 py-3" >
+          <div class="title2">
+            <h2><b>Input</b></h2>
+          </div> 
+
+          <form class="row g-4 mt-5 mb-3" method="POST"  id ="formdata" enctype="multipart/form-data" >
+            
+            <div class="container">
+              <div class=" img-frame" id="img-frame">
+                <div class="no-image" id="file-not-loaded">
+                  No Image Loaded <br>↓<br>
+                  Choose file in <br> <span class="Reminders">jpeg, jpg or png</span>  only                 
+                </div>
+                <div class="load-image" id="file-loaded">
+                  <div style="position:relative; " >
+                    <button type="button" class="closebutton" id="closebtn">&times;</button>    
+                    <img id= "PreviewImageID" class="drop-zone__thumb "  alt="">
+                  </div>
+                </div>
+              </div>
+                      
+              <div class="row">
+                <div  class="col-md-6 mt-4" >                
+                  {{form.image(class="form-control", id="filepicker")}}
+                </div>
+
+                {{ form.hidden_tag() }}
+            
+                <div class="col-md-6 mt-4 d-grid "> 
+                  <button class="btn btn-bd-primary" id="but" >
+                    <img src="../../../static/pic/spinner.gif" id ="spinner-gif" width="20" height="20" salt="">
+                    <span> Submit </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>                    
+        </div>
+      
+       
+        <div class="col-lg  form-holder my-5 py-3">
+          <div class="title2" id="result">
+            <h2><b>Result</b></h2>
+          </div>
+    
+          <div class="row g-4 mt-5 mb-3" > 
+            <div class="container">
+              <div class="img-frame" id="img-frame">
+                <div class="load-image">
+                  <img class="drop-zone__thumb" id= "processing-gif"  src="../../../static/pic/loading.gif" alt="">
+                  <img class="drop-zone__thumb" id= "pred"  alt="">
+                </div>
+              </div>
+
+              <div class="col-md-12 mt-4 d-grid px-0">         
+                <button class="btn btn-bd-primary" id="D-btn" type="button">Save As :
+                  <input type="radio" class="custom-radio" name="typesave" value="pic.jpeg"        >Jpeg&nbsp;   
+                  <input type="radio" class="custom-radio" name="typesave" value="pic.jpg"         >Jpg &nbsp;
+                  <input type="radio" class="custom-radio" name="typesave" value="pic.png" checked >Png &nbsp;
+                </button>
+              </div>
+            </div> 
+          </div>
+        </div> 
+      </div>
+    </div>
+  </div>
+  
+  <script src="../../../static/js/imgload.js"></script>                                                <!--Load image (load in input section)-->
+   
+  <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>                                    <!-- save file cdn -->
+    
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>    <!-- jquery cdn -->
+  
+  <script src="../../../static/js/imgsave.js"></script>                                                 <!-- save image (download) -->
+  
+
+  <script >
+    $('#processing-gif').hide()
+    $('#spinner-gif').hide()
+    $(document).ready(function() {      
+      $('form').submit(function (e) {
+        e.preventDefault();
+        var url = "{{ url_for('detection.cardiac_detection_ajax') }}"; // send the form data here.
+        var form_data = new FormData($('#formdata')[0]);
+                
+        for (const value of form_data.values()) {
+                    
+          if (value.type == "image/jpeg" || value.type == "image/png" || value.type ==  "image/jpg")  {
+                      
+            $.ajax({
+              type: "POST",
+              url: url,
+              data: form_data,  
+              contentType: false,
+              cache: false,
+              processData: false,
+              async: true,
+              beforeSend: function(){
+                $('#pred').hide()
+                $('#processing-gif').show()  
+                $('#spinner-gif').show()
+              },
+            
+              success: function (data) {          
+                if (data.data.massage == "sucess") {
+                  var pred = document.getElementById('pred');
+                  pred.style.display="block"
+                  pred.src = "data:image/jpeg;base64,"+data.data.result;   // display the returned data in the console.
+                }
+                else if (data.data.massage == "codeerror") {
+                  var pred = document.getElementById('pred');
+                  pred.style.display="block"
+                  pred.src = "../../../static/pic/opps.png";
+                  alert("Something went wrong (code broken) !!!");
+                }
+                else {
+                  var pred = document.getElementById('pred');
+                  pred.style.display="none"
+                }
+                $('#processing-gif').hide()  
+                $('#spinner-gif').hide()
+                            
+              }
+            });
+          } 
+          else {
+                  // do something if needed                                     
+          }
+        }
+        e.preventDefault(); // block the traditional submission of the form.
+      });
+              // Inject our CSRF token into our AJAX request.
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+          }
+        }
+      })
+    });
+  </script>
+ 
+
+{% endblock %}
