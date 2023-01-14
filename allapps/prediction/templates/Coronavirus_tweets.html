@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+
+ {% block title %} Coronavirus Tweets {% endblock %}
+ {% block content %}
+ 
+ {% block bgcolor %} {% endblock %}
+
+ <br>
+ <br>
+ <br>
+ <br>
+ <br>
+
+    <div class="container" >
+        <div class="title1">
+            <h2>Description</h2>
+        </div> 
+    
+       <div class="container main_description_box" >
+
+            <div class="container main_description_box_FirstDiv" >  
+                <p><span style="font-size:large;"><b><i>Coronavirus tweets Sentiment:</i></b></span> sentiment analysis of Tweets related to the Covid-19 pandemic. 
+                    Since the outbreak of coronavirus, it has affected more than 180 countries where massive losses in the economy and jobs globally 
+                    and confining about 58% of the global population are caused. The research on people’s 
+                    feelings is essential for keeping mental health and informed about Covid-19. 
+                </p>             
+                      
+            </div>
+
+            <div class="container main_description_box_SecondDiv" >
+                <h5 class="title3" ><i>Input & Output Details:</i></h5>
+                <div class="box" >
+                    <ul>
+                        <li>Type or paste Coronavirus tweets in input section within 200 words or less. </li>
+                        <li>Click "Submit" button to get the tweets Sentiment. </li>
+                    </ul>
+                </div>
+                <div class="box" >
+                    <ul>
+                        <li>input tweets Sentiment will be shown in result section.</li>
+                        <li>Model shows 90% accuracy during testing.</li>
+                    </ul>
+                </div>
+            </div>            
+        </div> 
+    
+        <br><br><br>
+        <div class="container my-6 " >
+            <div class="row  gx-5  px-3" style="column-gap: 4%; " >
+                <div class="col-lg form-holder my-5 py-3" >
+                    <div class="title2">
+                        <h2><b>Input</b></h2>
+                    </div> 
+
+                    <form class="row g-4 mt-3 mb-3" method="POST"  id ="formdata"  >
+                        
+                        <div class="container">
+                            {{ form.hidden_tag() }}   
+
+                            <div class="row g-2">
+                                <div class="col-md-8 mt-4 pt-0 mb-0"  >  
+                                    {{form.texts.label(class="form-label fs-5 fw-semibold")}}<br>
+                                </div>
+                                <div class="col-sm-4 mt-4 pb-1"  >
+                                    <select class="form-select" id="floatingSelectGrid" onchange="run()">
+                                        <option selected  >Example</option>
+                                        <option value="1">Example 1</option>
+                                        <option value="2">Example 2</option>
+                                        <option value="3">Example 3</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt-0 pt-0" >                                                            
+                                <div class="form-floating">
+                                    {{form.texts(class="form-control", placeholder="Leave a comment here", id="floatingTextarea2", style="height: 300px" )}}
+                                    <label for="floatingTextarea2">Tweets:</label>
+                                </div>
+                            </div>
+                        
+                            <div class="col-md-6 mt-4  "> 
+                            <button class="btn btn-bd-primary" id="but" >
+                                <img src="../../../static/pic/spinner.gif" id ="spinner-gif" width="20" height="20" salt="">
+                                <span> Submit </span>
+                            </button>
+                            </div>
+                        </div>
+                    </form>                    
+                </div>
+        
+        
+                <div class="col-lg  form-holder my-5 py-3">
+                    <div class="title2" id="result">
+                        <h2><b>Result</b></h2>
+                    </div>
+                    <br> 
+                    <ul class="row g-4 mt-3 mb-3">
+                            
+                        <li id="li1"> Yet to make a prediction !!! </li>
+                        <li id="li2"> To check Tweets sentiment type your text in input section & click submit Button.</li>
+                    </ul>    
+                </div> 
+            </div>
+        </div>
+    </div>
+  
+  
+   
+    <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>                                    <!-- save file cdn -->
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>    <!-- jquery cdn -->
+  
+  
+    <script >
+        $('#processing-gif').hide()
+        $('#spinner-gif').hide()
+        $(document).ready(function() {      
+            $('form').submit(function (e) {
+            e.preventDefault();
+            var url = "{{ url_for('prediction.Coronavirus_tweets_ajax')}}"; // send the form data here.
+            var form_data =  $("#formdata").serialize();
+                                   
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form_data,  
+
+                beforeSend: function(){
+                    $('#pred').hide()
+                    $('#processing-gif').show()  
+                    $('#spinner-gif').show()
+                },
+                
+                success: function (data) {
+
+                    if (data.data.massage == "sucess") {
+                        if (data.data.prid == "Positive") {
+
+                            var li1 = document.getElementById('li1');
+                            li1.className = 'positive'
+                            li1.innerHTML = "Corona tweets Sentiment:->  <span>" + data.data.prid+" 😀 </span> "+ data.data.conf
+                            var li2 = document.getElementById('li2');
+                            li2.innerHTML = "Make an another prediction !!!"
+                        }
+                        else if (data.data.prid == "Negative") {
+                                                        
+                            var li1 = document.getElementById('li1');
+                            li1.className = 'negative'
+                            li1.innerHTML = "Corona tweets Sentiment:->  <span>" + data.data.prid+" 😔 </span> "+ data.data.conf
+                            var li2 = document.getElementById('li2');
+                            li2.innerHTML = "Make an another prediction !!!"
+                        }
+                        else {
+                            
+                            var li1 = document.getElementById('li1');
+                            li1.className = 'neutral'
+                            li1.innerHTML = "Corona tweets Sentiment:->  <span>" + data.data.prid+" 😐 </span> "+ data.data.conf
+                            var li2 = document.getElementById('li2');
+                            li2.innerHTML = "Make an another prediction !!!"
+                        }
+                    }
+
+                    else if  (data.data.massage == "codeerror") {
+                        var li1 = document.getElementById('li1');
+                        li1.innerHTML = "Something went Wrong!!!!"
+                        var li2 = document.getElementById('li2');
+                        li2.innerHTML = "Please check make_prediction function !!!"
+                        alert("Something went wrong (code broken) !!!");
+                    }
+
+                    else  {
+                        var li1 = document.getElementById('li1');
+                        li1.innerHTML = "Something went Wrong!!!!"
+                        var li2 = document.getElementById('li2');
+                        li2.innerHTML = data.data.prid
+                        alert("Something went wrong (Response error) !!!");
+                    }
+                    $('#processing-gif').hide()  
+                    $('#spinner-gif').hide()                
+                }
+            });
+            e.preventDefault(); // block the traditional submission of the form.
+            });
+                    // Inject our CSRF token into our AJAX request.
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                    }
+               }
+            });
+        });
+    </script>
+
+    <script>
+        function run() {
+            var example = document.getElementById("floatingSelectGrid").value;
+            if (example ==1) {
+                document.getElementById("floatingTextarea2").value = "Due to the Covid-19 situation,economy is dying." 
+            }
+            else if (example ==2) {
+                document.getElementById("floatingTextarea2").value = "COVID-19 originally known as Corona VIrus Disease of 2019, has been declared as a pandemic by World Health Organization." 
+            }
+            else {
+                document.getElementById("floatingTextarea2").value = "Hi, COVID-19. Thanks for making me do more online shopping."
+            }
+        }
+    </script>
+{% endblock %} 
+

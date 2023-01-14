@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+
+ {% block title %} Malaria Test {% endblock %}
+ {% block content %}
+ 
+ {% block bgcolor %} {% endblock %}
+
+ <br>
+ <br>
+ <br>
+ <br>
+ <br>
+
+  <div class="container" >
+    <div class="title1">
+      <h2>Description</h2>
+    </div> 
+    
+    <div class="container main_description_box" >
+
+      <div class="container main_description_box_FirstDiv" >  
+        <p><span style="font-size:large;"><b><i>Malaria Detection:</i></b></span> Malaria is caused by parasites that are transmitted through the bites of infected mosquitoes.
+            While existing drugs make malaria a curable disease, inadequate diagnostics are major barriers to successful mortality reduction. 
+            The development of a fast and reliable diagnostic test is therefore one of the most promising ways of fighting malaria. </p>
+
+            <p>Malaria parasites can be identified by examining under the microscope a drop of the patient's blood, spread out as a “blood smear”
+               on a microscope slide. this app can detect malaria parasites from patient's blood films.                                
+        </p>          
+      </div>
+
+      <div class="container main_description_box_SecondDiv" >
+        <h5 class="title3" ><i>Input & Output Details:</i></h5>
+        <div class="box" >
+          <ul >
+            <li>Load patient's blood films (<b>JPEG, JPG, PNG</b> only) in input section using “Choose file”.</li>
+            <li>Click "Submit" button to get the grayscale pic. </li>
+          </ul>
+        </div>
+        <div class="box" >
+          <ul>
+            <li>Result will be shown in result section.</li>
+            <li>Model shows 90% accuracy during testing.</li>
+          </ul>
+        </div>
+      </div>            
+    </div> 
+    
+    <br><br><br>
+    <div class="container my-6 " >
+      <div class="row  gx-5  px-3" style="column-gap: 4%; " >
+        <div class="col-lg form-holder my-5 py-3" >
+          <div class="title2">
+            <h2><b>Input</b></h2>
+          </div> 
+
+          <form class="row g-4 mt-5 mb-3" method="POST"  id ="formdata" enctype="multipart/form-data" >
+            
+            <div class="container">
+              <div class=" img-frame" id="img-frame">
+                <div class="no-image" id="file-not-loaded">
+                  No Image Loaded <br>↓<br>
+                  Choose file in <br> <span class="Reminders">jpeg, jpg or png</span>  only                 
+                </div>
+                <div class="load-image" id="file-loaded">
+                  <div style="position:relative; " >
+                    <button type="button" class="closebutton" id="closebtn">&times;</button>    
+                    <img id= "PreviewImageID" class="drop-zone__thumb "  alt="">
+                  </div>
+                </div>
+              </div>
+                      
+              <div class="row">
+                <div  class="col-md-6 mt-4" >                
+                  {{form.image(class="form-control", id="filepicker")}}
+                </div>
+
+                {{ form.hidden_tag() }}
+            
+                <div class="col-md-6 mt-4 d-grid "> 
+                  <button class="btn btn-bd-primary" id="but" >
+                    <img src="../../../static/pic/spinner.gif" id ="spinner-gif" width="20" height="20" salt="">
+                    <span> Submit </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>                    
+        </div>
+      
+       
+        <div class="col-lg  form-holder my-5 py-3">
+            <div class="title2" id="result">
+                <h2><b>Result</b></h2>
+            </div>
+
+            <ul class="row g-4 mt-5 mb-3">
+                       
+                <li id="li1"> Yet to make a prediction !!! </li>
+                <li id="li2"> To make a prediction Load patient's blood films (<b>JPEG, JPG, PNG</b> only) in input section using “Choose file”
+                    & click submit Button.</li>
+            </ul>    
+        </div> 
+      </div>
+    </div>
+  </div>
+  
+  <script src="../../../static/js/imgload.js"></script>                                                 <!--Load image (load in input section)-->
+   
+  <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>                                    <!-- save file cdn -->
+    
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>    <!-- jquery cdn -->
+  
+  
+  
+
+  <script >
+      $('#processing-gif').hide()
+      $('#spinner-gif').hide()
+      $(document).ready(function() {      
+        $('form').submit(function (e) {
+          e.preventDefault();
+          var url = "{{ url_for('prediction.malaria_prediction_ajax')}}"; // send the form data here.
+          var form_data = new FormData($('#formdata')[0]);
+                  
+          for (const value of form_data.values()) {
+                      
+            if (value.type == "image/jpeg" || value.type == "image/png" || value.type ==  "image/jpg")  {
+                        
+              $.ajax({
+                type: "POST",
+                url: url,
+                data: form_data,  
+                contentType: false,
+                cache: false,
+                processData: false,
+                async: true,
+                beforeSend: function(){
+                  $('#pred').hide()
+                  $('#processing-gif').show()  
+                  $('#spinner-gif').show()
+                },
+              
+                success: function (data) {
+
+                    if (data.data.massage == "sucess") {
+                        if (data.data.prid == "Parasitize found") {
+
+                            console.log(data.data.prid)
+
+                            var li1 = document.getElementById('li1');
+                            li1.className = 'high'
+                            li1.innerHTML = "Malaria Diagnosis Result:->  <span>" + data.data.prid+"</span> "+ data.data.conf
+                            var li2 = document.getElementById('li2');
+                            li2.innerHTML = "Make an another prediction !!!"
+                        }
+                        else {
+                            console.log(data.data.prid)
+                            var li1 = document.getElementById('li1');
+                            li1.className = 'low'
+                            li1.innerHTML = "Malaria Diagnosis Result:->  <span>" + data.data.prid+"</span> "+ data.data.conf
+                            var li2 = document.getElementById('li2');
+                            li2.innerHTML = "Make an another prediction !!!"
+                        }
+                    }
+
+                    else if  (data.data.massage == "codeerror") {
+                        var li1 = document.getElementById('li1');
+                        li1.innerHTML = "Something went Wrong!!!!"
+                        var li2 = document.getElementById('li2');
+                        li2.innerHTML = "Please check malaria_detector function !!!"
+                        alert("Something went wrong (code broken) !!!");
+                    }
+
+                    else  {
+                        var li1 = document.getElementById('li1');
+                        li1.innerHTML = "Something went Wrong!!!!"
+                        var li2 = document.getElementById('li2');
+                        li2.innerHTML = data.data.prid
+                        alert("Something went wrong (Response error) !!!");
+                    }
+                    $('#processing-gif').hide()  
+                    $('#spinner-gif').hide()                
+                }
+              });
+            } 
+            else {
+                    // do something if needed                                     
+            }
+          }
+          e.preventDefault(); // block the traditional submission of the form.
+        });
+                // Inject our CSRF token into our AJAX request.
+        $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+              xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+            }
+          }
+        })
+      });
+    </script>
+  {% endblock %} 
+

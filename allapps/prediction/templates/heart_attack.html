@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+
+{% block title %} Heart Attack {% endblock %}
+  {% block content %}
+   
+
+ 
+   {% block bgcolor %}  {% endblock %}
+
+    <br><br><br><br><br>
+
+    <script> window.location.hash="{{jump_to}}"; </script>
+
+
+    <div class="container" >
+        <div class="title1">
+            <h2>Description</h2>
+        </div> 
+        
+        <div class="container main_description_box" >
+
+            <div class="container main_description_box_FirstDiv" >  
+                <p> <span style="font-size:large;"><b><i>Heart Attack</i></b></span>  is a medical emergency that occurs when blood supply to part of the heart is  
+                        suddenly cut off.
+                        
+                        This model predicts risk of heart attack upon taking several inputs. during training and testing  model register accuracy of 90% on test data.
+                </p>          
+            </div>
+
+            <div class="container main_description_box_SecondDiv" >
+                <h5 class="title3" ><i>Input Details:</i></h5>
+                <div class="box" >
+                    <ul >
+                        <li> <b><i>Age:</i></b> age of the Patient in Years ?</li>
+                        <li> <b><i>Gender:</i></b> Sex of the Patient ? </li>
+                        <li> <b><i>Chest Pain Type:</i></b> "Typical angina", "Atypical angina" or "Non-anginal pain"</li>
+                    </ul>
+                </div>
+                <div class="box" >
+                    <ul>
+                        <li> <b><i>Heart Rate:</i></b> Maximum Heart Rate Achieved</li>
+                        <li> <b><i>Exercise Induced Angina:</i></b> Did Exercise inducing Angina (Chest Pain) ? </li>
+                        <li> <b><i>ST Depression:</i></b> ST Depression Induced by Exercise Relative to Rest  ? </li>
+                    </ul>
+                </div>
+            </div>            
+        </div> 
+        
+    <br><br><br>
+        <div class="container my-6 " >
+        <div class="row  gx-5  px-3"style="column-gap: 4%; " >
+            <div class="col-lg form-holder my-5 py-3" >
+                <div class="title2">
+                    <h2><b>Input</b></h2>
+                </div> 
+                <form class="row g-4 mt-2 mb-2" method="POST"  >
+                    {{ form.hidden_tag() }}
+                    <div class="col-md-6">
+                        {{form.cp.label(class="form-label")}}<br>
+                        {{form.cp(class="form-select")}}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{form.sex.label(class="form-label")}}<br>
+                        {{form.sex(class="form-select")}}
+                    </div>
+
+                    <div class="col-12">
+                        {{form.age.label(class="form-label")}}<br>
+                        <div class="slider">
+                            {{form.age(oninput="this.form.amountInput.value=this.value")}}  
+                            <input type="number" name="amountInput" min="0" max="100" value={{session["age"]}} oninput="this.form.age.value=this.value" />
+                        </div>
+                    </div>
+                            
+                    <div class="col-12">
+                        {{form.thalachh.label(class="form-label")}}<br>
+                        <div class="slider"> 
+                            {{form.thalachh(oninput="this.form.thalInput.value=this.value" )}}
+                            <input type="number" name="thalInput" min="71" max="202"  value={{session["thalachh"]}} oninput="this.form.thalachh.value=this.value" />
+                        </div>
+                    </div>
+                            
+                    <div class="col-12">
+                        {{form.oldpeak.label(class="form-label")}}<br>
+                        <div class="slider">
+                            {{form.oldpeak(oninput="this.form.oldpInput.value=this.value")}}
+                            <input type="number" name="oldpInput" min="0.0" max="6.2" step="0.1" value={{session["oldpeak"]}} oninput="this.form.oldpeak.value=this.value" />
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        {{form.exng.label()}}<br>
+                        {{form.exng(class="custom-radio")}}
+                    </div>
+
+                    <div class="col-12">
+                        {{ form.submit(class="btn btn-bd-primary") }}
+                    </div>
+                </form> 
+            </div>
+
+        
+            <div class="col-lg  form-holder my-5 py-3">
+                <div class="title2" id="result">
+                    <h2><b>Result</b></h2>
+                </div> 
+                <br>
+                <ul class="row g-4 mt-2 mb-2">                
+                    {% if result['prid'] == 'none' %}
+                        <li> Yet to make a prediction</li>
+                        <li> To make a prediction fill the input form and click submit button</li>
+                    {% else %} 
+                        {% if result['prid'] == 'error' %}
+                            <li> Something went Wrong!!!!</li>
+                            <li> Please check HApredict function"}</li>
+                        {% else %} 
+                            <li {% if result['prid'] == 'Low' %} class="low"   
+                                {% elif  result['prid'] == 'High' %} class="high"  {% endif %} >
+
+                                Heart Attack Risk : <span> {{result['prid']}}</span> {{result['conf']}}
+                            </li>
+
+                            <li>Make an another prediction !!!</li>
+                        {% endif %}
+                    {% endif %}    
+                </ul>  
+            </div>
+        </div> 
+        <br>
+        </div>
+    </div>
+{% endblock %}
